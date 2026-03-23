@@ -1,0 +1,28 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+
+# IntelliJ IDEA
+.idea/
+
+# IntelliJ specific files
+/shelf/
+/httpRequests/
+/dataSources/
+/dataSources.local.xml
+
+# DBT
+dbt_packages/
+target/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
