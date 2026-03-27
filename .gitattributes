@@ -1,0 +1,8 @@
+# Ensure all text files use LF in repo
+* text=auto eol=lf
+
+# Specific files
+*.md text
+*.sql text
+*.yml text
+*.env text
