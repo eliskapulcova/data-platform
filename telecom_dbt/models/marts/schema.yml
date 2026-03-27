@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: mrt_user_metrics
+    description: "Aggregated user metrics for BI"
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique

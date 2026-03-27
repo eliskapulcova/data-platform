@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: int_user_activity
+    description: "Aggregated events per user and event type"
+
+    columns:
+      - name: user_id
+        description: "User identifier"
+
+      - name: event_type
+        description: "Type of telecom event (call, sms, internet)"
+
+      - name: event_count
+        description: "Number of events per user and type"
+        tests:
+          - not_null
+
+      - name: total_duration
+        description: "Total duration of events"
+        tests:
+          - not_null
