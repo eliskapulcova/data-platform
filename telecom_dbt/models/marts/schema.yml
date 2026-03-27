@@ -2,9 +2,16 @@ version: 2
 
 models:
   - name: mrt_user_metrics
-    description: "Aggregated user metrics for BI"
+    description: "Aggregated user metrics for BI dashboards"
     columns:
       - name: user_id
+        description: "Unique user identifier"
         tests:
           - not_null
           - unique
+      - name: total_events
+        description: "Total number of events per user"
+      - name: distinct_event_types
+        description: "Number of distinct event types per user"
+      - name: total_duration
+        description: "Sum of all durations per user"
