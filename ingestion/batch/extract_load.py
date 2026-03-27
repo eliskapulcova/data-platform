@@ -1,7 +1,7 @@
 import os
 import psycopg2
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,23 +21,23 @@ def main():
     cur = conn.cursor()
 
     # Clear previous test data - only for dev/test env, no prod
-    cur.execute("TRUNCATE TABLE raw_user_activity;")
+    # cur.execute("TRUNCATE TABLE raw_user_activity;")
 
     # Inserting 200 new rows
 
     event_types = ["call", "sms", "internet"]
 
-    for _ in range(200):
+    for i in range(200):
         cur.execute(
             """
-            INSERT INTO raw_user_activity (user_id, event_type, duration, event_time)
+            INSERT INTO raw.raw_user_activity (user_id, event_type, duration, event_time)
             VALUES (%s, %s, %s, %s)
             """,
             (
                 random.randint(1, 20),
                 random.choice(event_types),
                 random.randint(1, 300),
-                datetime.now()
+                datetime.now() - timedelta(minutes=i)  # unique timestamp per row
             )
         )
 

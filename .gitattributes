@@ -1,8 +1,10 @@
 # Ensure all text files use LF in repo
 * text=auto eol=lf
 
-# Specific files
-*.md text
+# Specific dbt/Python file types
 *.sql text
 *.yml text
-*.env text
+*.yaml text
+*.py text
+*.md text
+*.txt text
