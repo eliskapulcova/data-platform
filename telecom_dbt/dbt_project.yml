@@ -37,8 +37,10 @@ models:
       +schema: staging
 
     intermediate:
-      +materialized: table
+      +materialized: incremental
       +schema: intermediate
+      +post-hook:
+        - "CREATE INDEX IF NOT EXISTS idx_int_user_event_key ON {{ this }} (user_event_key);"
 
     marts:
       +materialized: table

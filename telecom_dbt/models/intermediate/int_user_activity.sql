@@ -1,13 +1,24 @@
 {{ config(
-    materialized='table'
+    materialized='incremental',
+    unique_key='user_event_key'
 ) }}
 
-select
-    user_id,
-    event_type,
-    count(*) as event_count,
-    sum(duration) as total_duration,
-    min(event_time) as first_event,
-    max(event_time) as last_event
-from {{ ref('stg_user_activity') }}
-group by user_id, event_type
+with staged as (
+
+    select
+    user_id::int,
+    event_type::text,
+    duration::int,
+    event_time::timestamp,
+    -- create composite key for incremental uniqueness
+    user_id || '_' || event_type as user_event_key
+      from {{ ref('stg_user_activity') }}
+
+)
+
+select *
+from staged
+
+    {% if is_incremental() %}
+where user_event_key not in (select user_event_key from {{ this }})
+    {% endif %}
