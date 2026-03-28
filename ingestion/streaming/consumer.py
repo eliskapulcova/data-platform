@@ -1,45 +1,50 @@
-import json
-import os
 import psycopg2
 from kafka import KafkaConsumer
-from dotenv import load_dotenv
+import json
+from config import Config
+from logger import get_logger
 
-load_dotenv()
+logger = get_logger("KafkaConsumer")
 
 def main():
-    print("Starting Kafka consumer...")
+    logger.info("Starting Kafka consumer...")
 
-    # Kafka consumer
     consumer = KafkaConsumer(
-        'user_activity',
-        bootstrap_servers='127.0.0.1:9092',
+        Config.KAFKA_TOPIC,
+        bootstrap_servers=f"{Config.KAFKA_HOST}:{Config.KAFKA_PORT}",
         auto_offset_reset='earliest',
         group_id='group1',
         value_deserializer=lambda m: json.loads(m.decode('utf-8'))
     )
 
-    # Postgres connection
     conn = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        dbname=os.getenv("DB_NAME")
+        host=Config.PG_HOST,
+        port=Config.PG_PORT,
+        user=Config.PG_USER,
+        password=Config.PG_PASSWORD,
+        dbname=Config.PG_DB
     )
     cur = conn.cursor()
+    batch = []
 
     for message in consumer:
-        data = message.value
-        # Insert into raw schema
-        cur.execute(
-            """
-            INSERT INTO raw.raw_user_activity (user_id, event_type, duration, event_time)
-            VALUES (%s, %s, %s, %s)
-            """,
-            (data["user_id"], data["event_type"], data["duration"], data["event_time"])
-        )
-        conn.commit()
-        print(f"Inserted message: {data}")
+        batch.append(message.value)
+        if len(batch) >= Config.BATCH_SIZE:
+            try:
+                args_str = ",".join(
+                    cur.mogrify(
+                        "(%s,%s,%s,%s)",
+                        (d["user_id"], d["event_type"], d["duration"], d["event_time"])
+                    ).decode('utf-8') for d in batch
+                )
+                cur.execute(f"INSERT INTO raw.raw_user_activity (user_id, event_type, duration, event_time) VALUES {args_str}")
+                conn.commit()
+                logger.info(f"Inserted batch of {len(batch)} messages.")
+            except Exception as e:
+                logger.error(f"Error inserting batch: {e}")
+                conn.rollback()
+            finally:
+                batch.clear()
 
 if __name__ == "__main__":
     main()
