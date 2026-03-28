@@ -40,7 +40,7 @@ models:
       +materialized: incremental
       +schema: intermediate
       +post-hook:
-        - "CREATE INDEX IF NOT EXISTS idx_int_user_event_key ON {{ this }} (user_event_key);"
+        - "CREATE INDEX IF NOT EXISTS idx_int_user_event_id ON {{ this }} (user_event_id);"
 
     marts:
       +materialized: table
