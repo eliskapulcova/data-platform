@@ -2,16 +2,42 @@ version: 2
 
 models:
   - name: mrt_user_metrics
-    description: "Aggregated user metrics for BI dashboards"
+    description: >
+      Mart-level model providing daily aggregated user activity metrics.
+      Designed for BI and reporting use cases.
+
     columns:
       - name: user_id
-        description: "Unique user identifier"
+        description: Unique identifier of the user.
+
+      - name: event_date
+        description: Date of the aggregated user activity (day-level granularity).
         tests:
           - not_null
-          - unique
+
       - name: total_events
-        description: "Total number of events per user"
+        description: Total number of events for the user on the given day.
+
       - name: distinct_event_types
-        description: "Number of distinct event types per user"
+        description: Number of distinct event types for the user.
+
       - name: total_duration
-        description: "Sum of all durations per user"
+        description: Total duration of all user events.
+
+      - name: avg_duration
+        description: Average duration of user events.
+
+      - name: call_events
+        description: Number of call events.
+
+      - name: sms_events
+        description: Number of SMS events.
+
+      - name: internet_events
+        description: Number of internet usage events.
+
+      - name: first_event
+        description: Timestamp of the first event for the user on that day.
+
+      - name: last_event
+        description: Timestamp of the last event for the user on that day.

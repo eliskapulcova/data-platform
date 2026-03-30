@@ -2,21 +2,30 @@ version: 2
 
 models:
   - name: int_user_activity
-    description: "Aggregated events per user and event type"
+    description: >
+      Intermediate model that enriches staged user activity data.
+      Generates unique event identifiers and ensures deduplication.
+      Handles late-arriving data and prepares dataset for analytics.
 
     columns:
       - name: user_id
-        description: "User identifier"
+        description: Unique identifier of the user.
+        tests:
+          - not_null
 
       - name: event_type
-        description: "Type of telecom event (call, sms, internet)"
+        description: Type of user activity event.
 
-      - name: event_count
-        description: "Number of events per user and type"
+      - name: duration
+        description: Duration of the event in seconds.
+
+      - name: event_time
+        description: Timestamp when the event occurred.
+
+      - name: user_event_id
+        description: >
+          Deterministic unique identifier for each event, generated using a hash
+          of user_id, event_type, and event_time.
         tests:
           - not_null
-
-      - name: total_duration
-        description: "Total duration of events"
-        tests:
-          - not_null
+          - unique

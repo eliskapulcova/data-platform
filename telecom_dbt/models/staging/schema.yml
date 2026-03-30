@@ -1,7 +1,27 @@
 version: 2
 
-sources:
-  - name: raw
-    schema: raw
-    tables:
-      - name: raw_user_activity
+models:
+  - name: stg_user_activity
+    description: >
+      Staging model for user activity events. 
+      Cleans and standardizes raw data ingested from the raw layer.
+      No business logic is applied here.
+
+    columns:
+      - name: user_id
+        description: Unique identifier of the user.
+        tests:
+          - not_null
+
+      - name: event_type
+        description: Type of user activity event (e.g. call, sms, internet).
+        tests:
+          - not_null
+
+      - name: duration
+        description: Duration of the event in seconds.
+
+      - name: event_time
+        description: Timestamp when the event occurred.
+        tests:
+          - not_null

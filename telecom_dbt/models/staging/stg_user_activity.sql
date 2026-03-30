@@ -1,17 +1,17 @@
 {{ config(
-    materialized='incremental',
-    unique_key='user_event_id'
+    materialized='incremental'
 ) }}
 
 select
-    user_id::int,
-        event_type::text,
-        duration::int,
-        event_time::timestamp,
-    -- create a unique key per event for incremental loading
-        user_id || '_' || event_type || '_' || extract(epoch from event_time)::int as user_event_id
+    user_id::int as user_id,
+        event_type::text as event_type,
+        duration::int as duration,
+        event_time::timestamp as event_time
 from {{ source('raw', 'raw_user_activity') }}
+
     {% if is_incremental() %}
-where event_time >= (select max(event_time) from {{ this }})
+where event_time > (
+    select coalesce(max(event_time), '1900-01-01'::timestamp)
+    from {{ this }}
+    )
     {% endif %}
-order by event_time
