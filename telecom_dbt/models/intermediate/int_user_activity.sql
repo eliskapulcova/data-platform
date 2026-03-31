@@ -39,7 +39,7 @@ deduplicated as (
 select *
 from deduplicated
 
-    {% if is_incremental() %}
+    {% if is_incremental() and this.exists %}
 -- handle late arriving data (reprocess small window)
 where event_time > (
     select coalesce(max(event_time), '1900-01-01'::timestamp) - interval '5 minutes'

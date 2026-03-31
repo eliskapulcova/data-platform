@@ -56,16 +56,19 @@ services:
       - zookeeper
 
   airflow:
-    image: apache/airflow:2.7.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: apache/airflow:2.7.1-python3.10
     container_name: airflow
     restart: always
     environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_postgres:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: ${AIRFLOW__CORE__EXECUTOR}
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW__CORE__SQL_ALCHEMY_CONN}
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__WEBSERVER__RBAC: "True"
       AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
-      AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth"
+      AIRFLOW__API__AUTH_BACKENDS: ${AIRFLOW__API__AUTH_BACKENDS}
     depends_on:
       - airflow_postgres
     ports:
@@ -74,6 +77,10 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
+      - ./telecom_dbt:/opt/airflow/dbt
+      - C:/Users/pulcovae/.dbt/profiles.yml:/home/airflow/.dbt/profiles.yml
+      - ./.env:/opt/airflow/.env
+      - ./ingestion:/opt/airflow/ingestion
     command: >
       bash -c "
       airflow db init &&
