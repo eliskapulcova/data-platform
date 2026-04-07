@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y git && \
 
 # Switch to airflow user for Python packages
 USER airflow
+RUN pip install --no-cache-dir kafka-python confluent-kafka
 
 # Install dbt and the Postgres adapter for the airflow user
-RUN pip install --no-cache-dir dbt-core==1.9.3 dbt-postgres==1.8.2
+RUN pip install --no-cache-dir dbt-core==1.9.3 dbt-postgres==1.9.1

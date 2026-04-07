@@ -59,7 +59,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: apache/airflow:2.7.1-python3.10
     container_name: airflow
     restart: always
     environment:
@@ -78,13 +77,14 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./telecom_dbt:/opt/airflow/dbt
-      - C:/Users/pulcovae/.dbt/profiles.yml:/home/airflow/.dbt/profiles.yml
+      - ./.dbt:/home/airflow/.dbt
       - ./.env:/opt/airflow/.env
       - ./ingestion:/opt/airflow/ingestion
     command: >
       bash -c "
       airflow db init &&
       airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
+      airflow scheduler &
       airflow webserver
       "
 
